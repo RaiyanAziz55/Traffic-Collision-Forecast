@@ -1,0 +1,53 @@
+services:
+  frontend:
+    build:
+      context: ./frontend/map-frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8000
+        VITE_TILE_URL: http://localhost:3000/ottawa_risk_baseline
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+      - martin
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434/api
+      OLLAMA_MODEL: llama3.2
+      CORS_ORIGINS: http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173,http://127.0.0.1:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ollama
+
+  martin:
+    image: ghcr.io/maplibre/martin:latest
+    command:
+      - /data/ottawa_risk_baseline.mbtiles
+    volumes:
+      - ./Data/processed:/data:ro
+    ports:
+      - "3000:3000"
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama-data:/root/.ollama
+    ports:
+      - "11434:11434"
+
+  pipeline:
+    profiles:
+      - pipeline
+    build:
+      context: ./data-pipeline
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: ./scripts/run_pipeline.sh
+
+volumes:
+  ollama-data:

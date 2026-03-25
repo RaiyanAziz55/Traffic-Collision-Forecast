@@ -1,0 +1,7 @@
+geopandas
+pandas
+osmnx
+shapely
+meteostat
+xgboost
+scikit-learn

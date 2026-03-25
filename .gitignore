@@ -1,0 +1,7 @@
+backend/__pycache__
+backend/.venv
+cache
+data-pipeline/.venv
+data-pipeline/cache
+frontend/map-frontend/node_modules
+frontend/node_modules
